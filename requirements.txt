@@ -1,0 +1,6 @@
+langchain==0.1.0
+langchain-openai
+langchain-community
+streamlit
+duckduckgo-search
+tavily-python
