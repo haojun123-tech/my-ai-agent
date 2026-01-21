@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>傲娇兔姬：魔性解压闯关</title>
+    <style>
+        /* ========== 多巴胺色系基础样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+
+        /* 多巴胺渐变背景 */
+        body {
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFE4B5 50%, #87CEEB 100%);
+            touch-action: none;
+        }
+
+        /* ========== 游戏容器 ========== */
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* ========== 分数显示 - 多巴胺风格 ========== */
+        #scoreBoard {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            font-weight: bold;
+            color: #FF69B4;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8), 0 0 20px #FFD700;
+            z-index: 100;
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 30px;
+            border: 3px solid #FFD700;
+        }
+
+        /* ========== 兔姬角色 - 魔性设计 ========== */
+        #bunnyGirl {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            z-index: 50;
+            cursor: pointer;
+            transition: transform 0.05s ease-out;
+        }
+
+        .bunny-body {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 兔姬身体 */
+        .bunny-main {
+            position: absolute;
+            width: 60px;
+            height: 70px;
+            background: linear-gradient(180deg, #FFF0F5 0%, #FFB6C1 100%);
+            border-radius: 30px 30px 25px 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            border: 2px solid #FF69B4;
+            box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+        }
+
+        /* 兔姬脸蛋 */
+        .bunny-face {
+            position: absolute;
+            width: 50px;
+            height: 45px;
+            background: #FFF5EE;
+            border-radius: 50%;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 眼睛 */
+        .bunny-eye {
+            position: absolute;
+            width: 10px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            top: 15px;
+            animation: blink 3s infinite;
+        }
+        .bunny-eye.left { left: 10px; }
+        .bunny-eye.right { right: 10px; }
+        .bunny-eye::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.1); }
+        }
+
+        /* 腮红 - 傲娇必备 */
+        .bunny-blush {
+            position: absolute;
+            width: 12px;
+            height: 8px;
+            background: #FF6B6B;
+            border-radius: 50%;
+            top: 25px;
+            opacity: 0.6;
+        }
+        .bunny-blush.left { left: 3px; }
+        .bunny-blush.right { right: 3px; }
+
+        /* 嘴巴 */
+        .bunny-mouth {
+            position: absolute;
+            width: 8px;
+            height: 5px;
+            background: #FF69B4;
+            border-radius: 0 0 10px 10px;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 兔耳朵 */
+        .bunny-ear {
+            position: absolute;
+            width: 18px;
+            height: 45px;
+            background: linear-gradient(180deg, #FFF0F5 0%, #FFB6C1 100%);
+            border-radius: 50% 50% 40% 40%;
+            top: -35px;
+            border: 2px solid #FF69B4;
+            transform-origin: bottom center;
+        }
+        .bunny-ear.left {
+            left: 12px;
+            transform: rotate(-15deg);
+        }
+        .bunny-ear.right {
+            right: 12px;
+            transform: rotate(15deg);
+        }
+        .bunny-ear::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 30px;
+            background: #FFB6C1;
+            border-radius: 50%;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 小裙子 */
+        .bunny-skirt {
+            position: absolute;
+            width: 65px;
+            height: 25px;
+            background: linear-gradient(180deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 0 0 50% 50%;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #FF8C00;
+        }
+
+        /* ========== 魔性动画 ========== */
+        /* 蹦跳动画 */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1, 1); }
+            30% { transform: translateY(-20px) scale(0.95, 1.05); }
+            50% { transform: translateY(-25px) scale(0.9, 1.1); }
+            70% { transform: translateY(-20px) scale(0.95, 1.05); }
+        }
+
+        .bouncing {
+            animation: bounce 0.4s ease-in-out;
+        }
+
+        /* 抖臀动画 */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg) translateX(-3px); }
+            75% { transform: rotate(5deg) translateX(3px); }
+        }
+
+        .wiggling {
+            animation: wiggle 0.2s ease-in-out 3;
+        }
+
+        /* 甩耳动画 */
+        @keyframes earFlap {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(-35deg); }
+        }
+        @keyframes earFlapRight {
+            0%, 100% { transform: rotate(15deg); }
+            50% { transform: rotate(35deg); }
+        }
+
+        .ear-flapping .bunny-ear.left {
+            animation: earFlap 0.15s ease-in-out 4;
+        }
+        .ear-flapping .bunny-ear.right {
+            animation: earFlapRight 0.15s ease-in-out 4;
+        }
+
+        /* 气鼓脸动画 */
+        @keyframes puff {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.15, 1.1); }
+        }
+
+        .puffing .bunny-face {
+            animation: puff 0.3s ease-in-out 2;
+        }
+        .puffing .bunny-blush {
+            opacity: 0.9;
+            transform: scale(1.3);
+        }
+
+        /* ========== 道具样式 ========== */
+        .collectible {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            z-index: 30;
+            animation: float 1s ease-in-out infinite, glow 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(10deg); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px currentColor; }
+            100% { box-shadow: 0 0 25px currentColor, 0 0 40px currentColor; }
+        }
+
+        /* 胡萝卜 */
+        .carrot {
+            background: linear-gradient(135deg, #FF8C00 0%, #FF6347 100%);
+            border: 3px solid #FF4500;
+            color: #FF6347;
+        }
+        .carrot::before {
+            content: '🥕';
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 星星 */
+        .star {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border: 3px solid #FF8C00;
+            color: #FFD700;
+        }
+        .star::before {
+            content: '⭐';
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 爱心 */
+        .heart {
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            border: 3px solid #FF1493;
+            color: #FF69B4;
+        }
+        .heart::before {
+            content: '💖';
+            font-size: 24px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ========== 障碍物样式 ========== */
+        .obstacle {
+            position: absolute;
+            z-index: 25;
+            animation: obstacleFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes obstacleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .obstacle-cactus {
+            width: 35px;
+            height: 50px;
+            background: linear-gradient(180deg, #32CD32 0%, #228B22 100%);
+            border-radius: 15px 15px 5px 5px;
+            border: 2px solid #006400;
+        }
+        .obstacle-cactus::before {
+            content: '🌵';
+            font-size: 30px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* ========== 粒子特效 ========== */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 200;
+            border-radius: 50%;
+            animation: particleExplode 0.5s ease-out forwards;
+        }
+
+        @keyframes particleExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ========== 傲娇口头禅气泡 ========== */
+        #speechBubble {
+            position: absolute;
+            padding: 12px 20px;
+            background: white;
+            border-radius: 20px;
+            border: 3px solid #FF69B4;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FF1493;
+            z-index: 150;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            box-shadow: 0 5px 20px rgba(255,105,180,0.4);
+        }
+
+        #speechBubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        #speechBubble::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid white;
+        }
+
+        /* ========== 加分动画 ========== */
+        .score-popup {
+            position: absolute;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 180;
+            pointer-events: none;
+            animation: scoreFloat 0.8s ease-out forwards;
+        }
+
+        @keyframes scoreFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-60px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* ========== 开始/结束界面 ========== */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,182,193,0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+        }
+
+        .overlay.hidden {
+            display: none;
+        }
+
+        .overlay h1 {
+            font-size: 32px;
+            color: #FF1493;
+            text-shadow: 3px 3px 6px rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+            text-align: center;
+            animation: titlePulse 1s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .overlay p {
+            font-size: 18px;
+            color: #FF69B4;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .play-btn {
+            padding: 18px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255,20,147,0.5);
+            transition: all 0.2s ease;
+            animation: btnBounce 0.8s ease-in-out infinite;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(255,20,147,0.6);
+        }
+
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes btnBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* 结束界面魔性循环动画 */
+        .game-over-bunny {
+            width: 120px;
+            height: 150px;
+            margin-bottom: 20px;
+            animation: gameOverDance 0.5s ease-in-out infinite;
+        }
+
+        @keyframes gameOverDance {
+            0%, 100% { transform: rotate(-10deg) scale(1); }
+            50% { transform: rotate(10deg) scale(1.1); }
+        }
+
+        .final-score {
+            font-size: 48px;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        /* ========== 连击显示 ========== */
+        #comboDisplay {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF8C00;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            z-index: 100;
+            opacity: 0;
+            transition: all 0.2s ease;
+        }
+
+        #comboDisplay.show {
+            opacity: 1;
+            animation: comboPop 0.3s ease;
+        }
+
+        @keyframes comboPop {
+            0% { transform: translateX(-50%) scale(0.5); }
+            50% { transform: translateX(-50%) scale(1.3); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 游戏主容器 -->
+    <div id="gameContainer">
+        <!-- 分数显示 -->
+        <div id="scoreBoard">分数: <span id="score">0</span></div>
+
+        <!-- 连击显示 -->
+        <div id="comboDisplay">连击 x<span id="comboCount">0</span></div>
+
+        <!-- 傲娇口头禅气泡 -->
+        <div id="speechBubble"></div>
+
+        <!-- 兔姬角色 -->
+        <div id="bunnyGirl">
+            <div class="bunny-body">
+                <div class="bunny-ear left"></div>
+                <div class="bunny-ear right"></div>
+                <div class="bunny-main">
+                    <div class="bunny-face">
+                        <div class="bunny-eye left"></div>
+                        <div class="bunny-eye right"></div>
+                        <div class="bunny-blush left"></div>
+                        <div class="bunny-blush right"></div>
+                        <div class="bunny-mouth"></div>
+                    </div>
+                </div>
+                <div class="bunny-skirt"></div>
+            </div>
+        </div>
+
+        <!-- 开始界面 -->
+        <div id="startOverlay" class="overlay">
+            <h1>🐰 傲娇兔姬 🐰<br>魔性解压闯关</h1>
+            <p>点击/触屏移动兔姬<br>收集道具躲避障碍！</p>
+            <button class="play-btn" id="startBtn">开始游戏</button>
+        </div>
+
+        <!-- 结束界面 -->
+        <div id="gameOverOverlay" class="overlay hidden">
+            <div class="game-over-bunny" id="gameOverBunny">
+                <div class="bunny-body">
+                    <div class="bunny-ear left"></div>
+                    <div class="bunny-ear right"></div>
+                    <div class="bunny-main">
+                        <div class="bunny-face">
+                            <div class="bunny-eye left"></div>
+                            <div class="bunny-eye right"></div>
+                            <div class="bunny-blush left"></div>
+                            <div class="bunny-blush right"></div>
+                            <div class="bunny-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="bunny-skirt"></div>
+                </div>
+            </div>
+            <p>哼！才不是本姬输了呢！</p>
+            <div class="final-score">得分: <span id="finalScore">0</span></div>
+            <button class="play-btn" id="restartBtn">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+        // ========== 全局错误捕获 - 非核心功能报错不影响游戏 ==========
+        window.onerror = function(msg, url, line, col, error) {
+            console.warn('游戏非致命错误:', msg);
+            return true; // 阻止默认错误处理
+        };
+        window.addEventListener('unhandledrejection', function(e) {
+            console.warn('Promise错误:', e.reason);
+            e.preventDefault();
+        });
+
+        // ========== 游戏配置 ==========
+        const CONFIG = {
+            bunnySpeed: 8,           // 兔姬移动速度
+            collectibleSpawnRate: 1500, // 道具生成间隔(ms)
+            obstacleSpawnRate: 3000,    // 障碍物生成间隔(ms)
+            baseSpeed: 2,               // 基础下落速度
+            speedIncrease: 0.001,       // 每帧速度增加
+            maxSpeed: 8,                // 最大速度
+            milestoneScore: 100         // 里程碑分数间隔
+        };
+
+        // ========== 游戏状态 ==========
+        let gameState = {
+            isPlaying: false,
+            score: 0,
+            combo: 0,
+            lastMilestone: 0,
+            speed: CONFIG.baseSpeed,
+            bunnyX: 0,
+            bunnyY: 0,
+            targetX: 0,
+            targetY: 0,
+            collectibles: [],
+            obstacles: [],
+            timers: [],
+            animationId: null
+        };
+
+        // ========== DOM元素 ==========
+        const bunnyGirl = document.getElementById('bunnyGirl');
+        const scoreDisplay = document.getElementById('score');
+        const comboDisplay = document.getElementById('comboDisplay');
+        const comboCount = document.getElementById('comboCount');
+        const speechBubble = document.getElementById('speechBubble');
+        const startOverlay = document.getElementById('startOverlay');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const finalScore = document.getElementById('finalScore');
+        const gameContainer = document.getElementById('gameContainer');
+
+        // ========== 傲娇口头禅库 ==========
+        const phrases = [
+            '爽～本姬赢麻了！',
+            '哼，这点分算什么！',
+            '太简单了啦～',
+            '本姬最强！',
+            '继续继续！',
+            '好爽好爽～',
+            '才不是因为开心呢！',
+            '略略略～',
+            '本姬无敌！',
+            '还可以更多哦～'
+        ];
+
+        // ========== 音效系统 - 使用Web Audio API ==========
+        let audioCtx = null;
+
+        function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            } catch(e) {
+                console.warn('音频初始化失败，使用静音模式');
+            }
+        }
+
+        // 多巴胺短音效 - 收集道具时播放
+        function playCollectSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.2);
+            } catch(e) {
+                console.warn('播放音效失败');
+            }
+        }
+
+        // 里程碑音效
+        function playMilestoneSound() {
+            if (!audioCtx) return;
+            try {
+                const notes = [523, 659, 784, 1047]; // C5 E5 G5 C6
+                notes.forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime + i * 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + i * 0.1 + 0.15);
+                    osc.start(audioCtx.currentTime + i * 0.1);
+                    osc.stop(audioCtx.currentTime + i * 0.1 + 0.15);
+                });
+            } catch(e) {
+                console.warn('播放里程碑音效失败');
+            }
+        }
+
+        // 碰撞音效
+        function playHitSound() {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(audioCtx.currentTime);
+                osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {
+                console.warn('播放碰撞音效失败');
+            }
+        }
+
+        // ========== 谷歌5行多巴胺核心代码 - 兔姬跟随点击/触屏移动+蹦跳 ==========
+        function handleInput(e) {
+            e.preventDefault();
+            const pos = e.touches ? e.touches[0] : e; // 支持触屏和鼠标
+            gameState.targetX = pos.clientX - 40; // 5行核心：获取目标X坐标
+            gameState.targetY = pos.clientY - 50; // 5行核心：获取目标Y坐标
+            bunnyGirl.classList.add('bouncing'); // 5行核心：添加蹦跳动画
+            setTimeout(() => bunnyGirl.classList.remove('bouncing'), 400); // 5行核心：移除动画
+        }
+        // ========== 谷歌5行多巴胺核心代码结束 ==========
+
+        // ========== 兔姬平滑移动 ==========
+        function updateBunnyPosition() {
+            const dx = gameState.targetX - gameState.bunnyX;
+            const dy = gameState.targetY - gameState.bunnyY;
+            gameState.bunnyX += dx * 0.15;
+            gameState.bunnyY += dy * 0.15;
+
+            // 边界检测
+            const maxX = window.innerWidth - 80;
+            const maxY = window.innerHeight - 100;
+            gameState.bunnyX = Math.max(0, Math.min(maxX, gameState.bunnyX));
+            gameState.bunnyY = Math.max(0, Math.min(maxY, gameState.bunnyY));
+
+            bunnyGirl.style.left = gameState.bunnyX + 'px';
+            bunnyGirl.style.top = gameState.bunnyY + 'px';
+        }
+
+        // ========== 多巴胺粒子特效 ==========
+        function createParticles(x, y, color) {
+            const colors = ['#FF69B4', '#FFD700', '#FF6347', '#87CEEB', '#98FB98'];
+            for (let i = 0; i < 12; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const angle = (Math.PI * 2 / 12) * i;
+                const distance = 30 + Math.random() * 40;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                particle.style.cssText = `
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: ${6 + Math.random() * 8}px;
+                    height: ${6 + Math.random() * 8}px;
+                    background: ${colors[Math.floor(Math.random() * colors.length)]};
+                    --tx: ${tx}px;
+                    --ty: ${ty}px;
+                `;
+                gameContainer.appendChild(particle);
+                setTimeout(() => particle.remove(), 500);
+            }
+        }
+
+        // ========== 加分弹出动画 ==========
+        function showScorePopup(x, y, points) {
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.textContent = '+' + points;
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            gameContainer.appendChild(popup);
+            setTimeout(() => popup.remove(), 800);
+        }
+
+        // ========== 显示傲娇口头禅 ==========
+        function showPhrase() {
+            const phrase = phrases[Math.floor(Math.random() * phrases.length)];
+            speechBubble.textContent = phrase;
+            speechBubble.style.left = (gameState.bunnyX + 40) + 'px';
+            speechBubble.style.top = (gameState.bunnyY - 50) + 'px';
+            speechBubble.classList.add('show');
+            setTimeout(() => speechBubble.classList.remove('show'), 1500);
+        }
+
+        // ========== 触发魔性动画 ==========
+        function triggerMagicAnimation() {
+            const animations = ['wiggling', 'ear-flapping', 'puffing'];
+            const anim = animations[Math.floor(Math.random() * animations.length)];
+            const bunnyBody = bunnyGirl.querySelector('.bunny-body');
+            bunnyBody.classList.add(anim);
+            setTimeout(() => bunnyBody.classList.remove(anim), 600);
+        }
+
+        // ========== 生成道具 ==========
+        function spawnCollectible() {
+            if (!gameState.isPlaying) return;
+
+            const types = ['carrot', 'star', 'heart'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const collectible = document.createElement('div');
+            collectible.className = 'collectible ' + type;
+            collectible.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+            collectible.style.top = '-50px';
+
+            const points = type === 'carrot' ? 10 : (type === 'star' ? 15 : 20);
+            collectible.dataset.points = points;
+
+            gameContainer.appendChild(collectible);
+            gameState.collectibles.push(collectible);
+        }
+
+        // ========== 生成障碍物 ==========
+        function spawnObstacle() {
+            if (!gameState.isPlaying) return;
+
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle obstacle-cactus';
+            obstacle.style.left = Math.random() * (window.innerWidth - 35) + 'px';
+            obstacle.style.top = '-60px';
+
+            gameContainer.appendChild(obstacle);
+            gameState.obstacles.push(obstacle);
+        }
+
+        // ========== 碰撞检测 ==========
+        function checkCollision(rect1, rect2) {
+            return rect1.left < rect2.right &&
+                   rect1.right > rect2.left &&
+                   rect1.top < rect2.bottom &&
+                   rect1.bottom > rect2.top;
+        }
+
+        // ========== 更新连击显示 ==========
+        function updateCombo(hit) {
+            if (hit) {
+                gameState.combo++;
+                comboCount.textContent = gameState.combo;
+                if (gameState.combo >= 3) {
+                    comboDisplay.classList.add('show');
+                }
+            } else {
+                gameState.combo = 0;
+                comboDisplay.classList.remove('show');
+            }
+        }
+
+        // ========== 游戏主循环 ==========
+        function gameLoop() {
+            if (!gameState.isPlaying) return;
+
+            updateBunnyPosition();
+
+            // 增加速度
+            gameState.speed = Math.min(CONFIG.maxSpeed, gameState.speed + CONFIG.speedIncrease);
+
+            const bunnyRect = bunnyGirl.getBoundingClientRect();
+
+            // 更新道具位置并检测碰撞
+            for (let i = gameState.collectibles.length - 1; i >= 0; i--) {
+                const collectible = gameState.collectibles[i];
+                const top = parseFloat(collectible.style.top) + gameState.speed;
+                collectible.style.top = top + 'px';
+
+                // 超出屏幕移除
+                if (top > window.innerHeight) {
+                    collectible.remove();
+                    gameState.collectibles.splice(i, 1);
+                    updateCombo(false);
+                    continue;
+                }
+
+                // 碰撞检测 - 收集道具
+                const collectRect = collectible.getBoundingClientRect();
+                if (checkCollision(bunnyRect, collectRect)) {
+                    const points = parseInt(collectible.dataset.points);
+                    const bonusPoints = Math.floor(points * (1 + gameState.combo * 0.1));
+                    gameState.score += bonusPoints;
+                    scoreDisplay.textContent = gameState.score;
+
+                    // 多巴胺反馈
+                    createParticles(collectRect.left + 20, collectRect.top + 20);
+                    showScorePopup(collectRect.left, collectRect.top, bonusPoints);
+                    playCollectSound();
+                    updateCombo(true);
+
+                    // 里程碑检测
+                    const currentMilestone = Math.floor(gameState.score / CONFIG.milestoneScore);
+                    if (currentMilestone > gameState.lastMilestone) {
+                        gameState.lastMilestone = currentMilestone;
+                        showPhrase();
+                        triggerMagicAnimation();
+                        playMilestoneSound();
+                    }
+
+                    collectible.remove();
+                    gameState.collectibles.splice(i, 1);
+                }
+            }
+
+            // 更新障碍物位置并检测碰撞
+            for (let i = gameState.obstacles.length - 1; i >= 0; i--) {
+                const obstacle = gameState.obstacles[i];
+                const top = parseFloat(obstacle.style.top) + gameState.speed * 0.8;
+                obstacle.style.top = top + 'px';
+
+                // 超出屏幕移除
+                if (top > window.innerHeight) {
+                    obstacle.remove();
+                    gameState.obstacles.splice(i, 1);
+                    continue;
+                }
+
+                // 碰撞检测 - 游戏结束
+                const obstacleRect = obstacle.getBoundingClientRect();
+                // 缩小碰撞盒，增加容错
+                const shrinkRect = {
+                    left: bunnyRect.left + 15,
+                    right: bunnyRect.right - 15,
+                    top: bunnyRect.top + 20,
+                    bottom: bunnyRect.bottom - 10
+                };
+                if (checkCollision(shrinkRect, obstacleRect)) {
+                    playHitSound();
+                    gameOver();
+                    return;
+                }
+            }
+
+            gameState.animationId = requestAnimationFrame(gameLoop);
+        }
+
+        // ========== 开始游戏 ==========
+        function startGame() {
+            // 初始化音频
+            initAudio();
+
+            // 重置状态
+            gameState.isPlaying = true;
+            gameState.score = 0;
+            gameState.combo = 0;
+            gameState.lastMilestone = 0;
+            gameState.speed = CONFIG.baseSpeed;
+            gameState.bunnyX = window.innerWidth / 2 - 40;
+            gameState.bunnyY = window.innerHeight - 150;
+            gameState.targetX = gameState.bunnyX;
+            gameState.targetY = gameState.bunnyY;
+
+            scoreDisplay.textContent = '0';
+            comboDisplay.classList.remove('show');
+
+            // 清理旧元素
+            cleanupGame();
+
+            // 设置兔姬位置
+            bunnyGirl.style.left = gameState.bunnyX + 'px';
+            bunnyGirl.style.top = gameState.bunnyY + 'px';
+
+            // 隐藏开始界面
+            startOverlay.classList.add('hidden');
+            gameOverOverlay.classList.add('hidden');
+
+            // 开始生成道具和障碍物
+            const collectibleTimer = setInterval(spawnCollectible, CONFIG.collectibleSpawnRate);
+            const obstacleTimer = setInterval(spawnObstacle, CONFIG.obstacleSpawnRate);
+            gameState.timers.push(collectibleTimer, obstacleTimer);
+
+            // 立即生成一些道具
+            setTimeout(spawnCollectible, 500);
+            setTimeout(spawnCollectible, 1000);
+
+            // 开始游戏循环
+            gameLoop();
+        }
+
+        // ========== 游戏结束 ==========
+        function gameOver() {
+            gameState.isPlaying = false;
+
+            // 清理定时器
+            gameState.timers.forEach(timer => clearInterval(timer));
+            gameState.timers = [];
+
+            // 取消动画帧
+            if (gameState.animationId) {
+                cancelAnimationFrame(gameState.animationId);
+            }
+
+            // 显示结束界面
+            finalScore.textContent = gameState.score;
+            gameOverOverlay.classList.remove('hidden');
+
+            // 触发气鼓脸动画
+            const bunnyBody = bunnyGirl.querySelector('.bunny-body');
+            bunnyBody.classList.add('puffing');
+        }
+
+        // ========== 清理游戏元素 - 内存防护 ==========
+        function cleanupGame() {
+            // 清理道具
+            gameState.collectibles.forEach(c => c.remove());
+            gameState.collectibles = [];
+
+            // 清理障碍物
+            gameState.obstacles.forEach(o => o.remove());
+            gameState.obstacles = [];
+
+            // 清理粒子
+            document.querySelectorAll('.particle').forEach(p => p.remove());
+
+            // 清理分数弹出
+            document.querySelectorAll('.score-popup').forEach(s => s.remove());
+        }
+
+        // ========== 事件绑定 ==========
+        // 点击/触屏事件
+        gameContainer.addEventListener('mousedown', handleInput);
+        gameContainer.addEventListener('touchstart', handleInput, { passive: false });
+        gameContainer.addEventListener('mousemove', function(e) {
+            if (gameState.isPlaying && e.buttons === 1) handleInput(e);
+        });
+        gameContainer.addEventListener('touchmove', function(e) {
+            if (gameState.isPlaying) handleInput(e);
+        }, { passive: false });
+
+        // 开始按钮
+        document.getElementById('startBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            startGame();
+        });
+
+        // 重新开始按钮
+        document.getElementById('restartBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            startGame();
+        });
+
+        // 防止页面滚动
+        document.addEventListener('touchmove', function(e) {
+            if (gameState.isPlaying) e.preventDefault();
+        }, { passive: false });
+
+        // 窗口大小变化适配
+        window.addEventListener('resize', function() {
+            if (gameState.isPlaying) {
+                const maxX = window.innerWidth - 80;
+                const maxY = window.innerHeight - 100;
+                gameState.bunnyX = Math.min(gameState.bunnyX, maxX);
+                gameState.bunnyY = Math.min(gameState.bunnyY, maxY);
+                gameState.targetX = Math.min(gameState.targetX, maxX);
+                gameState.targetY = Math.min(gameState.targetY, maxY);
+            }
+        });
+
+        // 初始化兔姬位置
+        bunnyGirl.style.left = (window.innerWidth / 2 - 40) + 'px';
+        bunnyGirl.style.top = (window.innerHeight - 150) + 'px';
+
+        console.log('🐰 傲娇兔姬：魔性解压闯关 - 游戏加载完成！');
+    </script>
+</body>
+</html>
